@@ -11,10 +11,28 @@ export async function GET( request , { params }) {
    }
 }
 
-export function DELETE(){
-    return NextResponse.json('Eliminando Producto')
+export async function DELETE(request , {params}){
+    try {
+        
+    const result = await conn.query("DELETE FROM product WHERE ID = ?" , [params.id])
+    
+    if(result.affectedRows ===0){
+        return NextResponse.json(
+            {
+                message: "Producto no encontrado"
+            },
+            {
+                status : 404
+            }
+        )
+    }
+    return new Response( null , {status : 204} )
+    
+    } catch (error) {
+        return NextResponse.json( {message : error.message} )
+    }
 }
 
 export function PUT(){
     return NextResponse.json('Actualizando Producto')
-}
+} 
