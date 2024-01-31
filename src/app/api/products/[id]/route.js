@@ -27,12 +27,26 @@ export async function DELETE(request , {params}){
         )
     }
     return new Response( null , {status : 204} )
-    
+
     } catch (error) {
         return NextResponse.json( {message : error.message} )
     }
 }
 
-export function PUT(){
-    return NextResponse.json('Actualizando Producto')
+export async function PUT( request , {params}){
+ try {
+    const data = await request.json()
+    const result = await conn.query("UPDATE product SET ? WHERE ID= ?" , [data , params.id] )
+
+    if( result.affectedRows === 0 ){
+        return NextResponse.json({ message :"Producto no encontrado"}, {status: 404})
+    }
+
+    const updateProduct = await conn.query("SELECT * FROM product WHERE id = ? " , [ params.id] )
+   
+    return NextResponse.json(updateProduct[0])
+ } catch (error) {
+    return NextResponse({message : error.message}, {status: 500})
+ }
+   
 } 
